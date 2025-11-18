@@ -6,7 +6,7 @@
 /*   By: agkicina <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 15:26:09 by agkicina          #+#    #+#             */
-/*   Updated: 2025/11/14 13:39:46 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/11/18 13:20:16 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,43 +15,34 @@
 #include <stdlib.h>
 #include <string.h>
 
+char	*f_strjoin(char const *s1, char const *s2);
+
 char	*get_next_line(int fd)
-
 {
-	static	char	buffer[BUFFER_SIZE + 1];
-	ssize_t	bytes_read;
-	size_t	i;
-	char	*line = NULL;
 
+	char	buffer[BUFFER_SIZE + 1];
+	size_t	bytes_read;
+	char	*line;
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
 	if (bytes_read <= 0)
 	{
-		return (NULL);
+	write(2, "Error\n", 6);
+	return (NULL);
 	}
-	i = 0;
-	while (i < (size_t)bytes_read && buffer[i] != '\n')
-		i++;
-	line = malloc(i + 2);
+	buffer[bytes_read] = '\0';
+	line = malloc(bytes_read + 1);
 	if (!line)
 		return (NULL);
-	size_t j = 0;
-	while (j <= i)
-	{
-		line[j] = buffer[j];
-		j++;
-	}
-	if (buffer[i] == '\n')
-		line[i + 1] = '\0';
+	line = f_strjoin(line, buffer);
 	return (line);
 }
 
 int	main(void)
-
 {
 	int	fd;
 	char *lines;
 	
-	fd = open("test.txt", O_RDONLY);
+	fd = open("/nfs/homes/agkicina/test.txt", O_RDONLY);
 	if (fd == -1)
 	{
 		write(2, "Error\n", 6);
