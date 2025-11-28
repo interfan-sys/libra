@@ -6,7 +6,7 @@
 /*   By: agkicina <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 15:26:09 by agkicina          #+#    #+#             */
-/*   Updated: 2025/11/25 12:36:10 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/11/28 13:57:33 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,25 @@
 
 char	*f_strjoin(char const *s1, char const *s2);
 char	*ft_strchr(const char *s, int c);
+
+char	*ft_update_stash(char *old_stash,)
+{
+	char	*new_stash;
+	size_t	len;
+	char	*new_line;
+
+	new_line = ft_strchr(old_stash, '\n');
+	if (!new_line)
+	{
+		free(old_stash);
+		return (NULL);
+	}
+	len = ft_strlen(new_line + 1);
+	new_stash = malloc(sizeof(char) * len);
+	free(old_stash);
+	return (new_stash);
+}
+
 
 char	*ft_extract(char *s)
 {
@@ -58,6 +77,7 @@ char	*get_next_line(int fd)
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (bytes == -1)
+			free(stash);
 			return (NULL);
 		buffer[bytes] = '\0';
 		stash = f_strjoin(stash, buffer);
