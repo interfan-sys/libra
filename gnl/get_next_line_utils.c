@@ -6,12 +6,30 @@
 /*   By: agkicina <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 14:20:30 by agkicina          #+#    #+#             */
-/*   Updated: 2025/11/17 14:23:05 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/12/01 13:12:50 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdint.h>
+
+char	*ft_strchr(char const *s, int c)
+{	
+	while (*s != '\0')
+	{
+		if (*s == (char)c)
+		{
+			return ((char *)s);
+		}
+		s++;
+	}
+	if ((char)c == '\0')
+	{
+		return ((char *)s);
+	}
+	return (NULL);
+}
 
 size_t	f_strlen(const char *s)
 {
@@ -92,30 +110,41 @@ char	*f_strdup(const char *s)
 	return (copy);
 }
 
-char	*f_strjoin(char const *s1, char const *s2)
+char	*f_strjoin(char *s1, char *s2)
 {
 	char	*newstr;
 	size_t	len1;
 	size_t	len2;
+	size_t	i;
+	size_t	j;
 	size_t	maxsize;
-	size_t	total_len;
-	
-	if (!s1 && !s2)
-		return (NULL);
-	else if (s1 && !s2)
-		return (f_strdup(s1));
-	else if (!s1 && s2)
-		return (f_strdup(s2));
+	 if (!s1)
+    {
+        s1 = malloc(1);
+        if (!s1)
+            return NULL;
+        s1[0] = '\0';
+    }
 	maxsize = (size_t)-1;
 	len1 = f_strlen(s1);
 	len2 = f_strlen(s2);
 	if (len1 > maxsize - len2 - 1)
-		return (NULL);
-	total_len = len1 + len2 + 1;
-	newstr = malloc(total_len);
+        return (NULL);
+	newstr = malloc(len1 + len2 + 1);
 	if (!newstr)
 		return (NULL);
-	f_strlcpy(newstr, s1, len1 + 1);
-	f_strlcat(newstr, s2, total_len);
-	return (newstr);
+	i = 0;
+	while(s1[i])
+	{
+		newstr[i] = s1[i];
+		i++;
+	}
+	j = 0;
+	while (s2[j])
+	{
+		newstr[i++] = s2[j++];
+	}
+		newstr[i] = '\0';
+		free(s1);
+		return (newstr);
 }

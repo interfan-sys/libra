@@ -6,52 +6,120 @@
 /*   By: agkicina <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 15:26:09 by agkicina          #+#    #+#             */
-/*   Updated: 2025/11/18 13:20:16 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/12/01 13:16:26 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <string.h>
 
 char	*f_strjoin(char const *s1, char const *s2);
+char	*ft_strchr(const char *s, int c);
+size_t	f_strlen(const	char *s);
+
+char	*ft_update_stash(char *old_stash)
+{
+	char	*new_stash;
+	size_t	len;
+	char	*new_line;
+	size_t	i;
+
+	new_line = ft_strchr(old_stash, '\n');
+	if (!new_line)
+	{
+		free(old_stash);
+		return (NULL);
+	}
+	len = f_strlen(new_line + 1);
+	new_stash = malloc(sizeof(char) * (len + 1));
+	if (!new_stash)
+	{
+		free(old_stash);
+		return (NULL);
+	}
+	i = 0;
+	new_line++;
+	while (i < len)
+	{
+		new_stash[i] = new_line[i];
+		i++;
+	}
+	new_stash[i] = '\0';
+	free(old_stash);
+	return (new_stash);
+}
+
+char	*ft_extract(char *s)
+{
+	int		i;
+	int		j;
+	char	*word;
+
+	if (!s || !*s)
+		return (NULL);
+	i = 0;
+	while (s[i] && s[i] != '\n')
+		i++;
+	if (s[i] == '\n')
+		i++;
+	word = malloc(i + 1);
+	if (!word)
+		return (NULL);
+	j = 0;
+	while (j < i)
+	{
+		word[j] = s[j];
+		j++;
+	}
+	word[j] = '\0';
+	return (word);
+}
 
 char	*get_next_line(int fd)
 {
+	static char	*stash;
+	char		buffer[BUFFER_SIZE + 1];
+	char		*line;
+	ssize_t		bytes;
 
-	char	buffer[BUFFER_SIZE + 1];
-	size_t	bytes_read;
-	char	*line;
-	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	if (bytes_read <= 0)
+	bytes = 1;
+	while ((!stash || !ft_strchr(stash, '\n')) && bytes > 0)
 	{
-	write(2, "Error\n", 6);
-	return (NULL);
+		bytes = read(fd, buffer, BUFFER_SIZE);
+		if (bytes == -1)
+		{
+			free (stash);
+			return (NULL);
+		}
+		buffer[bytes] = '\0';
+		stash = f_strjoin(stash, buffer);
+		if (!stash)
+			return (NULL);
 	}
-	buffer[bytes_read] = '\0';
-	line = malloc(bytes_read + 1);
-	if (!line)
+	if (!stash || !*stash)
+	{
+		free(stash);
+		stash = NULL;
 		return (NULL);
-	line = f_strjoin(line, buffer);
+	}
+	line = ft_extract(stash);
+	stash = ft_update_stash(stash);
 	return (line);
 }
 
 int	main(void)
+
 {
-	int	fd;
-	char *lines;
-	
-	fd = open("/nfs/homes/agkicina/test.txt", O_RDONLY);
-	if (fd == -1)
+	int		fd;
+	char	*line;
+
+	fd = open("test.txt", O_RDONLY);
+	while ((line = get_next_line(fd)) != NULL)
 	{
-		write(2, "Error\n", 6);
-		return (1);
+		write(1, line, f_strlen(line));
+		free(line);
 	}
-	lines = get_next_line(fd);
-	if (lines)
-	write(1, lines, strlen(lines));
-	free(lines);
 	close(fd);
 	return(0);
 }
