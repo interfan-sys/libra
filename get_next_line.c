@@ -17,12 +17,14 @@
 
 char	*f_strjoin(char const *s1, char const *s2);
 char	*ft_strchr(const char *s, int c);
+size_t	f_strlen(const	char *s);
 
-char	*ft_update_stash(char *old_stash,)
+char	*ft_update_stash(char *old_stash)
 {
 	char	*new_stash;
 	size_t	len;
 	char	*new_line;
+	size_t	i;
 
 	new_line = ft_strchr(old_stash, '\n');
 	if (!new_line)
@@ -30,8 +32,21 @@ char	*ft_update_stash(char *old_stash,)
 		free(old_stash);
 		return (NULL);
 	}
-	len = ft_strlen(new_line + 1);
-	new_stash = malloc(sizeof(char) * len);
+	len = f_strlen(new_line + 1);
+	new_stash = malloc(sizeof(char) * (len + 1));
+	if (!new_stash)
+	{
+		free(old_stash);
+		return (NULL);
+	}
+	i = 0;
+	new_line++;
+	while (i < len)
+	{
+		new_stash[i] = new_line[i];
+		i++;
+	}
+	new_stash[i] = '\0';
 	free(old_stash);
 	return (new_stash);
 }
@@ -73,16 +88,21 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	bytes = 1;
-	while (!ft_strchr(stash, '\n') && bytes > 0)
+	while ((!stash || !ft_strchr(stash, '\n')) && bytes > 0)/*if stash is empty read from fd, if stash exists but there is no newline read more, stop reading omly when stash has a newline or EOF (bytes <= 0)*/
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (bytes == -1)
+		{
 			free(stash);
 			return (NULL);
+		}
 		buffer[bytes] = '\0';
 		stash = f_strjoin(stash, buffer);
+		if(!stash)
+			return (NULL);
 	}
 		line = ft_extract(stash);
+		stash = ft_update_stash(stash);
 		return (line);
 }
 
@@ -90,18 +110,14 @@ int	main(void)
 
 {
 	int	fd;
-	char *lines;
+	char *line;
 	
 	fd = open("test.txt", O_RDONLY);
-	if (fd == -1)
+	while ((line = get_next_line(fd)) != NULL)
 	{
-		write(2, "Error\n", 6);
-		return (1);
+	write(1, line, strlen(line));
+	free(line);
 	}
-	lines = get_next_line(fd);
-	if (lines)
-	write(1, lines, strlen(lines));
-	free(lines);
 	close(fd);
 	return(0);
 }
