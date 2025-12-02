@@ -6,73 +6,80 @@
 /*   By: agkicina <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 15:26:09 by agkicina          #+#    #+#             */
-/*   Updated: 2025/12/01 13:16:26 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/12/02 14:17:10 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "get_next_line.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 
-char	*f_strjoin(char const *s1, char const *s2);
+char	*f_strjoin(char *s1, char *s2);
 char	*ft_strchr(const char *s, int c);
 size_t	f_strlen(const	char *s);
 
-char	*ft_update_stash(char *old_stash)
+char	*ft_update_stash(char *stash)
 {
 	char	*new_stash;
-	size_t	len;
-	char	*new_line;
-	size_t	i;
+	int		i;
+	int		j;
 
-	new_line = ft_strchr(old_stash, '\n');
-	if (!new_line)
+	i = 0;
+	while (stash[i] != '\0' && stash[i] != '\n')
+		i++;
+
+	if (stash[i] == '\0')
 	{
-		free(old_stash);
+		free(stash);
 		return (NULL);
 	}
-	len = f_strlen(new_line + 1);
-	new_stash = malloc(sizeof(char) * (len + 1));
+	i++;
+	new_stash = malloc(f_strlen(stash + i) + 1);
 	if (!new_stash)
 	{
-		free(old_stash);
+		free(stash);
 		return (NULL);
 	}
-	i = 0;
-	new_line++;
-	while (i < len)
+	j = 0;
+	while (stash[i] != '\0')
 	{
-		new_stash[i] = new_line[i];
+		new_stash[j] = stash[i];
+		j++;
 		i++;
 	}
 	new_stash[i] = '\0';
-	free(old_stash);
+	free(stash);
 	return (new_stash);
 }
 
-char	*ft_extract(char *s)
+char	*ft_extract_word(char *s)
 {
 	int		i;
-	int		j;
 	char	*word;
 
-	if (!s || !*s)
+	if (!s || *s == '\0')
 		return (NULL);
 	i = 0;
-	while (s[i] && s[i] != '\n')
+	while (s[i] != '\0' &&  s[i] != '\n')
 		i++;
 	if (s[i] == '\n')
 		i++;
 	word = malloc(i + 1);
 	if (!word)
 		return (NULL);
-	j = 0;
-	while (j < i)
+	i = 0;
+	while (s[i] != '\0' && s[i] != '\n')
 	{
-		word[j] = s[j];
-		j++;
+		word[i] = s[i];
+		i++;
 	}
-	word[j] = '\0';
+	if (s[i] == '\n')
+	{
+		word[i] = '\n';
+		i++;
+	}
+	word[i] = '\0';
 	return (word);
 }
 
@@ -82,14 +89,22 @@ char	*get_next_line(int fd)
 	char		buffer[BUFFER_SIZE + 1];
 	char		*line;
 	ssize_t		bytes;
+	int			i;
 
+	  if (fd < 0 || BUFFER_SIZE <= 0)
+        return (NULL);
 	bytes = 1;
-	while ((!stash || !ft_strchr(stash, '\n')) && bytes > 0)
+	while (!ft_strchr(stash, '\n') && bytes > 0)
 	{
+		i = 0;
+		while (i < BUFFER_SIZE +1)
+			buffer[i++] = 0;
+		//OR ft_memset(buffer, 0, BUFFER_SIZE +1);
 		bytes = read(fd, buffer, BUFFER_SIZE);
-		if (bytes == -1)
+		if (bytes < 0)
 		{
 			free (stash);
+			stash = (NULL);
 			return (NULL);
 		}
 		buffer[bytes] = '\0';
@@ -97,13 +112,13 @@ char	*get_next_line(int fd)
 		if (!stash)
 			return (NULL);
 	}
-	if (!stash || !*stash)
+	if (!stash || stash[0] == '\0')
 	{
 		free(stash);
 		stash = NULL;
 		return (NULL);
 	}
-	line = ft_extract(stash);
+	line = ft_extract_word(stash);
 	stash = ft_update_stash(stash);
 	return (line);
 }
