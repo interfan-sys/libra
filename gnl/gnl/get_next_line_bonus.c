@@ -6,11 +6,11 @@
 /*   By: agkicina <agkicina@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/04 15:27:43 by agkicina          #+#    #+#             */
-/*   Updated: 2025/12/07 13:43:00 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/12/07 13:59:20 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_strchr(const char *s, int c)
 {
@@ -127,18 +127,18 @@ char	*get_next_line(int fd)
 	stash[fd] = ft_update_stash(stash[fd]);
 	return (line);
 }
+/*
+int	main(void)
+{
+	int		fd;
+	char	*line;
 
-// int	main(void)
-// {
-// 	int		fd;
-// 	char	*line;
-
-// 	fd = open("test.txt", O_RDONLY);
-// 	while ((line = get_next_line(fd)) != NULL)
-// 	{
-// 		write(1, line, ft_strlen(line));
-// 		free (line);
-// 	}
-// 	close (fd);
-// 	return (0);
-// }
+	fd = open("test.txt", O_RDONLY);
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		write(1, line, ft_strlen(line));
+		free (line);
+	}
+	close (fd);
+	return (0);
+}*/

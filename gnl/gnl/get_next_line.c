@@ -6,7 +6,7 @@
 /*   By: agkicina <agkicina@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/04 15:27:43 by agkicina          #+#    #+#             */
-/*   Updated: 2025/12/07 13:41:00 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/12/07 13:59:56 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,18 +127,17 @@ char	*get_next_line(int fd)
 	stash = ft_update_stash(stash);
 	return (line);
 }
-
-// int	main(void)
-// {
-// 	int		fd;
-// 	char	*line;
-
-// 	fd = open("test.txt", O_RDONLY);
-// 	while ((line = get_next_line(fd)) != NULL)
-// 	{
-// 		write(1, line, ft_strlen(line));
-// 		free (line);
-// 	}
-// 	close (fd);
-// 	return (0);
-// }
+/*
+int	main(void)
+{
+	int		fd;
+	char	*line;
+	fd = open("test.txt", O_RDONLY);
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		write(1, line, ft_strlen(line));
+		free (line);
+	}
+	close (fd);
+	return (0);
+}*/
