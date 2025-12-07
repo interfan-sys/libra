@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agkicina <agkicina@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/04 15:27:43 by agkicina          #+#    #+#             */
-/*   Updated: 2025/12/07 13:41:00 by agkicina         ###   ########.fr       */
+/*   Updated: 2025/12/07 13:43:00 by agkicina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,20 +111,20 @@ char	*read_fill_stash(int fd, char *stash)
 
 char	*get_next_line(int fd)
 {
-	static char		*stash = (NULL);
+	static char		*stash[1024];
 	char			*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!stash)
-		stash = ft_strdup("");
-	if (!stash)
+	if (!stash[fd])
+		stash[fd] = ft_strdup("");
+	if (!stash[fd])
 		return (NULL);
-	stash = read_fill_stash(fd, stash);
-	if (!stash)
+	stash[fd] = read_fill_stash(fd, stash[fd]);
+	if (!stash[fd])
 		return (NULL);
-	line = ft_extract(stash);
-	stash = ft_update_stash(stash);
+	line = ft_extract(stash[fd]);
+	stash[fd] = ft_update_stash(stash[fd]);
 	return (line);
 }
 
