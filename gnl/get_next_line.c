@@ -82,9 +82,14 @@ char	*ft_extract(char *s)
 
 char	*read_fill_stash(int fd, char *stash)
 {
-	char	buffer[BUFFER_SIZE + 1];
+	char	*buffer = malloc(BUFFER_SIZE + 1);
 	ssize_t	bytes;
-
+	
+	if (!buffer)
+	{
+		free (stash);
+		return (NULL);
+	}
 	bytes = 1;
 	while (!ft_strchr(stash, '\n') && bytes > 0)
 	{

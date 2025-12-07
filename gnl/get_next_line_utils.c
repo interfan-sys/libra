@@ -108,6 +108,11 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (s1);
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
+	if (len1 > SIZE_MAX - len2 - 1)
+	{
+		free (s1);
+		return (NULL);
+	}
 	newstr = malloc(len1 + len2 + 1);
 	if (!newstr)
 	{
